@@ -1,0 +1,36 @@
+<?php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use App\Board;
+use App\CommandFactory;
+use App\Exceptions\BoardException;
+
+$board = new Board();
+$factory = new CommandFactory($board);
+
+echo "Welcome to Toy Robot Simulator!\n";
+echo "Type commands (PLACE, MOVE, LEFT, RIGHT, REPORT) or EXIT to quit.\n\n";
+
+while (true) {
+    echo "> ";
+    $commandText = trim(fgets(STDIN));
+
+    if ($commandText === '' ) {
+        continue; 
+    }
+
+    if (strtoupper($commandText) === 'EXIT') {
+        echo "Goodbye!\n";
+        break;
+    }
+
+    try {
+        $command = $factory->make($commandText);
+        $command->execute();
+    } catch (BoardException $e) {
+        echo "Board Error: " . $e->getMessage() . PHP_EOL;
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage() . PHP_EOL;
+    }
+}

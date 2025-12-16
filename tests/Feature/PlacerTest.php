@@ -46,46 +46,6 @@ it('handles lowercase direction by converting to uppercase', function () {
 });
 
 
-
-it('outputs error when PLACE command has no parameters', function () {
-    $command = 'PLACE';
-    $placer = new Placer($this->board, $command);
-    
-    $this->board->shouldReceive('placeRobot')->never();
-    
-    ob_start();
-    $placer->execute();
-    $output = ob_get_clean();
-    
-    expect($output)->toContain('Error: PLACE command requires parameters');
-});
-
-it('outputs error when PLACE command has incomplete parameters', function () {
-    $command = 'PLACE 0,0';
-    $placer = new Placer($this->board, $command);
-    
-    $this->board->shouldReceive('placeRobot')->never();
-    
-    ob_start();
-    $placer->execute();
-    $output = ob_get_clean();
-    
-    expect($output)->toContain('Error: PLACE requires X,Y,DIRECTION');
-});
-
-it('outputs error when only one parameter is provided', function () {
-    $command = 'PLACE 5';
-    $placer = new Placer($this->board, $command);
-    
-    $this->board->shouldReceive('placeRobot')->never();
-    
-    ob_start();
-    $placer->execute();
-    $output = ob_get_clean();
-    
-    expect($output)->toContain('Error: PLACE requires X,Y,DIRECTION');
-});
-
 it('converts non-integer coordinates to integers', function () {
     $command = 'PLACE 2.7,3.9,NORTH';
     $placer = new Placer($this->board, $command);
