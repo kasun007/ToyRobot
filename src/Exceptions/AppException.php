@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 
-class BoardException extends Exception
+class AppException extends Exception
 {
     protected array $context;
 
@@ -30,3 +30,29 @@ class BoardException extends Exception
         ];
     }
 }
+
+
+class BoardException extends AppException
+{
+    // You can add board-specific exception handling here if needed
+}
+
+class PlacerException extends AppException
+{
+    // You can add board-specific exception handling here if needed
+}
+ 
+class ReporterException extends AppException
+{
+    // You can add board-specific exception handling here if needed
+}
+class RotaterException extends AppException
+{
+    // You can add rotater-specific exception handling here if needed
+}
+class ExiterException extends AppException
+{
+    // You can add rotater-specific exception handling here if needed
+}
+
+ 

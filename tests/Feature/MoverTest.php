@@ -2,8 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Mover;
-use App\Board;
+use App\Models\Board ;  
+use App\Models\Mover ; 
+ 
 use App\Exceptions\BoardException;
 use Mockery;
 

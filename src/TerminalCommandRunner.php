@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Board;
+use App\Models\Board;
 use App\CommandFactory;
 use App\Exceptions\BoardException;
 
@@ -16,14 +16,11 @@ while (true) {
     echo "> ";
     $commandText = trim(fgets(STDIN));
 
-    if ($commandText === '' ) {
-        continue; 
+    if ($commandText === '') {
+        continue;
     }
 
-    if (strtoupper($commandText) === 'EXIT') {
-        echo "Goodbye!\n";
-        break;
-    }
+
 
     try {
         $command = $factory->make($commandText);

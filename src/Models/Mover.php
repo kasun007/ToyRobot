@@ -1,15 +1,17 @@
 <?php
 
-namespace App;
+namespace App\Models;
+ 
+use App\Command\Command;
 
 use App\Exceptions\BoardException;
 
-class Left implements Command
+class Mover implements Command
 {
     private Board $board;
     private string $command;
 
-    private const DIRECTIONS = ['NORTH', 'WEST', 'SOUTH', 'EAST'];
+    private const DIRECTIONS = ['NORTH', 'SOUTH', 'EAST', 'WEST'];
 
     public function __construct(Board $board, string $command)
     {
@@ -20,39 +22,35 @@ class Left implements Command
     public function execute(): void
     {
         if (!$this->board) {
-            throw new BoardException(
-                'Board not initialized',
-                1001,
-                ['command' => $this->command]
-            );
+            throw new BoardException('Board not initialized',1301,['command' => $this->command]);
         }
 
         $placement = $this->board->getRobotPlaced();
-
+ 
         if ($placement === null) {
             throw new BoardException(
                 'Robot is not placed on the board',
-                1002,
+                1302,
                 ['command' => $this->command]
             );
         }
 
-        // Validate placement structure
+       
         foreach (['x', 'y', 'facing'] as $key) {
             if (!array_key_exists($key, $placement)) {
                 throw new BoardException(
                     "Invalid placement data: missing {$key}",
-                    1003,
+                    1303,
                     ['placement' => $placement]
                 );
             }
         }
 
-        // Validate facing direction
+        
         if (!in_array($placement['facing'], self::DIRECTIONS, true)) {
             throw new BoardException(
                 'Invalid facing direction',
-                1004,
+                1304,
                 [
                     'facing' => $placement['facing'],
                     'allowed' => self::DIRECTIONS
@@ -60,20 +58,20 @@ class Left implements Command
             );
         }
 
-        // Rotate LEFT
-        $rotations = [
-            'NORTH' => 'WEST',
-            'WEST'  => 'SOUTH',
-            'SOUTH' => 'EAST',
-            'EAST'  => 'NORTH'
-        ];
+        $x = (int) $placement['x'];
+        $y = (int) $placement['y'];
+        $facing = $placement['facing'];
 
-        $newFacing = $rotations[$placement['facing']];
+       
+        switch ($facing) {
+            case 'NORTH': $y++; break;
+            case 'SOUTH': $y--; break;
+            case 'EAST':  $x++; break;
+            case 'WEST':  $x--; break;
+        }
 
-        $this->board->placeRobot(
-            $placement['x'],
-            $placement['y'],
-            $newFacing
-        );
+         
+        $this->board->placeRobot($x, $y, $facing);
+      
     }
 }

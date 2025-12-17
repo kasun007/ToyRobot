@@ -1,46 +1,46 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use App\Exceptions\BoardException;
+use App\Exceptions\RotaterException;
+use App\Command\Command;
 
-class Right implements Command
+class Rotater implements Command
 {
     private Board $board;
-    private string $command;
+    private string $direction; // 'LEFT' or 'RIGHT'
 
     private const DIRECTIONS = ['NORTH', 'EAST', 'SOUTH', 'WEST'];
 
-    public function __construct(Board $board, string $command)
+    public function __construct(Board $board, string $direction)
     {
         $this->board = $board;
-        $this->command = $command;
+        $this->direction = strtoupper($direction);
+
+        if (!in_array($this->direction, ['LEFT', 'RIGHT'], true)) {
+            throw new RotaterException(
+                "Invalid rotation direction: {$direction}",
+                1200
+            );
+        }
     }
 
     public function execute(): void
     {
-        if (!$this->board) {
-            throw new BoardException(
-                'Board not initialized',
-                1101,
-                ['command' => $this->command]
-            );
-        }
-
         $placement = $this->board->getRobotPlaced();
 
         if ($placement === null) {
-            throw new BoardException(
+            throw new RotaterException(
                 'Robot is not placed on the board',
                 1102,
-                ['command' => $this->command]
+                ['command' => $this->direction]
             );
         }
 
         // Validate placement structure
         foreach (['x', 'y', 'facing'] as $key) {
             if (!array_key_exists($key, $placement)) {
-                throw new BoardException(
+                throw new RotaterException(
                     "Invalid placement data: missing {$key}",
                     1103,
                     ['placement' => $placement]
@@ -48,7 +48,6 @@ class Right implements Command
             }
         }
 
-        // Validate facing direction
         if (!in_array($placement['facing'], self::DIRECTIONS, true)) {
             throw new BoardException(
                 'Invalid facing direction',
@@ -60,15 +59,13 @@ class Right implements Command
             );
         }
 
-        // Rotate RIGHT
-        $rotations = [
-            'NORTH' => 'EAST',
-            'EAST'  => 'SOUTH',
-            'SOUTH' => 'WEST',
-            'WEST'  => 'NORTH'
-        ];
+        // Determine new facing
+        $currentIndex = array_search($placement['facing'], self::DIRECTIONS, true);
+        $newIndex = $this->direction === 'RIGHT'
+            ? ($currentIndex + 1) % count(self::DIRECTIONS)
+            : ($currentIndex - 1 + count(self::DIRECTIONS)) % count(self::DIRECTIONS);
 
-        $newFacing = $rotations[$placement['facing']];
+        $newFacing = self::DIRECTIONS[$newIndex];
 
         $this->board->placeRobot(
             $placement['x'],

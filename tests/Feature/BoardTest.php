@@ -1,7 +1,7 @@
 <?php
 
-use App\Board;
-use App\Router  ;
+use App\Models\Board ;  
+ 
 
 
 it('returns null when robot has not been placed', function () {

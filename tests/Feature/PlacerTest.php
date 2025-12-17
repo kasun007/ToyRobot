@@ -1,7 +1,7 @@
 <?php
 
-use App\Placer;
-use App\Board;
+use App\Models\Placer;
+use App\Models\Board ;  
 
 beforeEach(function () {
     $this->board = Mockery::mock(Board::class);

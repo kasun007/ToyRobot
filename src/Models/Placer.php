@@ -1,8 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Models;
+use App\Command\Command;
 
-use App\Exceptions\BoardException;
+use App\Exceptions\PlacerException;
 
 class Placer implements Command
 {
@@ -20,7 +21,7 @@ class Placer implements Command
     public function execute(): void
     {
         if (!$this->board) {
-            throw new BoardException(
+            throw new PlacerException(
                 'Board not initialized',
                 1201,
                 ['command' => $this->command]
@@ -31,7 +32,7 @@ class Placer implements Command
 
          
         if (count($parts) !== 2) {
-            throw new BoardException(
+            throw new PlacerException(
                 'Invalid PLACE command format',
                 1202,
                 ['command' => $this->command]
@@ -42,7 +43,7 @@ class Placer implements Command
 
         // Validate parameter count
         if (count($params) !== 3) {
-            throw new BoardException(
+            throw new PlacerException(
                 'PLACE requires X,Y,DIRECTION',
                 1203,
                 ['params' => $params]
@@ -53,7 +54,7 @@ class Placer implements Command
 
         // Validate X and Y are integers
         if (!is_numeric($x) || !is_numeric($y)) {
-            throw new BoardException(
+            throw new PlacerException(
                 'X and Y must be numbers',
                 1204,
                 ['x' => $x, 'y' => $y]
@@ -66,7 +67,7 @@ class Placer implements Command
 
      
         if (!in_array($direction, self::DIRECTIONS, true)) {
-            throw new BoardException(
+            throw new PlacerException(
                 'Invalid direction',
                 1205,
                 [
