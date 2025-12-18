@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace App\Command;
 use App\Command\Command;
-
+use App\Enums\Direction;
 use App\Exceptions\PlacerException;
+use App\Models\Board;
 
 class Placer implements Command
 {
     private Board $board;
     private string $command;
-
-    private const DIRECTIONS = ['NORTH', 'SOUTH', 'EAST', 'WEST'];
 
     public function __construct(Board $board, string $command)
     {
@@ -30,7 +29,6 @@ class Placer implements Command
 
         $parts = explode(' ', $this->command, 2);
 
-         
         if (count($parts) !== 2) {
             throw new PlacerException(
                 'Invalid PLACE command format',
@@ -50,9 +48,8 @@ class Placer implements Command
             );
         }
 
-        [$x, $y, $direction] = $params;
+        [$x, $y, $directionString] = $params;
 
-        // Validate X and Y are integers
         if (!is_numeric($x) || !is_numeric($y)) {
             throw new PlacerException(
                 'X and Y must be numbers',
@@ -63,21 +60,10 @@ class Placer implements Command
 
         $x = (int) $x;
         $y = (int) $y;
-        $direction = strtoupper($direction);
+        $directionString = strtoupper($directionString);
 
-     
-        if (!in_array($direction, self::DIRECTIONS, true)) {
-            throw new PlacerException(
-                'Invalid direction',
-                1205,
-                [
-                    'direction' => $direction,
-                    'allowed' => self::DIRECTIONS
-                ]
-            );
-        }
+        $direction = Direction::validate($directionString, PlacerException::class, 1205);
 
-        
-        $this->board->placeRobot($x, $y, $direction);
+        $this->board->placeRobot($x, $y, $direction->value);
     }
 }

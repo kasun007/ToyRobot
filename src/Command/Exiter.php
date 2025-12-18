@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models;
+namespace App\Command;
 
 use App\Command\Command;
+use App\Models\Board;
 use App\Exceptions\ExiterException;
 
 class Exiter implements Command

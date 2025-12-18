@@ -24,7 +24,8 @@ while (true) {
 
     try {
         $command = $factory->make($commandText);
-        $command->execute();
+        $command = $factory->make($commandText);
+        echo $command->execute();
     } catch (BoardException $e) {
         echo "Board Error: " . $e->getMessage() . PHP_EOL;
     } catch (Exception $e) {

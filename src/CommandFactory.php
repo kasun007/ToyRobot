@@ -3,12 +3,11 @@
 namespace App;
 
 use App\Models\Board;
-use App\Models\Placer;
-use App\Models\Rotater;
-use App\Models\Mover;
-use App\Models\Reporter;       
-
-use App\Models\Exiter;
+use App\Command\Placer;
+use App\Command\Rotater;
+use App\Command\Mover;
+use App\Command\Reporter;       
+use App\Command\Exiter;
 use App\Command\Command;
 use Exception;
 

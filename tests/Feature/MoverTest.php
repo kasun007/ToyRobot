@@ -1,94 +1,200 @@
 <?php
 
-namespace Tests\Feature;
-
-use App\Models\Board ;  
-use App\Models\Mover ; 
- 
+use App\Command\Mover;
+use App\Models\Board;
 use App\Exceptions\BoardException;
 use Mockery;
 
 beforeEach(function () {
-    // Create a Mockery mock for Board
     $this->board = Mockery::mock(Board::class);
 });
 
 afterEach(function () {
-    // Cleanup Mockery
     Mockery::close();
 });
 
-it('throws an exception if robot is not placed', function () {
+it('moves robot north successfully', function () {
     $this->board->shouldReceive('getRobotPlaced')
         ->once()
-        ->andReturn(null);
+        ->andReturn(['x' => 2, 'y' => 2, 'facing' => 'NORTH']);
 
-    $mover = new Mover($this->board, 'MOVE');
-    $mover->execute();
-})->throws(BoardException::class, 'Robot is not placed on the board');
-
-it('throws an exception if placement data is missing keys', function () {
-    $this->board->shouldReceive('getRobotPlaced')
-        ->once()
-        ->andReturn(['x' => 0, 'y' => 0]); // missing 'facing'
-
-    $mover = new Mover($this->board, 'MOVE');
-    $mover->execute();
-})->throws(BoardException::class, 'Invalid placement data: missing facing');
-
-it('throws an exception if facing direction is invalid', function () {
-    $this->board->shouldReceive('getRobotPlaced')
-        ->once()
-        ->andReturn(['x' => 0, 'y' => 0, 'facing' => 'UP']);
-
-    $mover = new Mover($this->board, 'MOVE');
-    $mover->execute();
-})->throws(BoardException::class, 'Invalid facing direction');
-
-it('moves the robot north correctly', function () {
-    $this->board->shouldReceive('getRobotPlaced')
-        ->once()
-        ->andReturn(['x' => 1, 'y' => 1, 'facing' => 'NORTH']);
     $this->board->shouldReceive('placeRobot')
         ->once()
-        ->with(1, 2, 'NORTH');
+        ->with(2, 3, 'NORTH')
+        ->andReturn(true);
 
     $mover = new Mover($this->board, 'MOVE');
     $mover->execute();
 });
 
-it('moves the robot south correctly', function () {
+it('moves robot south successfully', function () {
     $this->board->shouldReceive('getRobotPlaced')
         ->once()
         ->andReturn(['x' => 2, 'y' => 2, 'facing' => 'SOUTH']);
+
     $this->board->shouldReceive('placeRobot')
         ->once()
-        ->with(2, 1, 'SOUTH');
+        ->with(2, 1, 'SOUTH')
+        ->andReturn(true);
 
     $mover = new Mover($this->board, 'MOVE');
     $mover->execute();
 });
 
-it('moves the robot east correctly', function () {
+it('moves robot east successfully', function () {
     $this->board->shouldReceive('getRobotPlaced')
         ->once()
-        ->andReturn(['x' => 0, 'y' => 0, 'facing' => 'EAST']);
+        ->andReturn(['x' => 2, 'y' => 2, 'facing' => 'EAST']);
+
     $this->board->shouldReceive('placeRobot')
         ->once()
-        ->with(1, 0, 'EAST');
+        ->with(3, 2, 'EAST')
+        ->andReturn(true);
 
     $mover = new Mover($this->board, 'MOVE');
     $mover->execute();
 });
 
-it('moves the robot west correctly', function () {
+it('moves robot west successfully', function () {
     $this->board->shouldReceive('getRobotPlaced')
         ->once()
-        ->andReturn(['x' => 5, 'y' => 5, 'facing' => 'WEST']);
+        ->andReturn(['x' => 2, 'y' => 2, 'facing' => 'WEST']);
+
     $this->board->shouldReceive('placeRobot')
         ->once()
-        ->with(4, 5, 'WEST');
+        ->with(1, 2, 'WEST')
+        ->andReturn(true);
 
     $mover = new Mover($this->board, 'MOVE');
     $mover->execute();
+});
+
+it('prevents robot from moving off north edge', function () {
+    $this->board->shouldReceive('getRobotPlaced')
+        ->once()
+        ->andReturn(['x' => 2, 'y' => 4, 'facing' => 'NORTH']);
+
+    $this->board->shouldReceive('placeRobot')
+        ->once()
+        ->with(2, 5, 'NORTH')
+        ->andReturn(false);
+
+    $mover = new Mover($this->board, 'MOVE');
+    $mover->execute();
+});
+
+it('prevents robot from moving off south edge', function () {
+    $this->board->shouldReceive('getRobotPlaced')
+        ->once()
+        ->andReturn(['x' => 2, 'y' => 0, 'facing' => 'SOUTH']);
+
+    $this->board->shouldReceive('placeRobot')
+        ->once()
+        ->with(2, -1, 'SOUTH')
+        ->andReturn(false);
+
+    $mover = new Mover($this->board, 'MOVE');
+    $mover->execute();
+});
+
+it('prevents robot from moving off east edge', function () {
+    $this->board->shouldReceive('getRobotPlaced')
+        ->once()
+        ->andReturn(['x' => 4, 'y' => 2, 'facing' => 'EAST']);
+
+    $this->board->shouldReceive('placeRobot')
+        ->once()
+        ->with(5, 2, 'EAST')
+        ->andReturn(false);
+
+    $mover = new Mover($this->board, 'MOVE');
+    $mover->execute();
+});
+
+it('prevents robot from moving off west edge', function () {
+    $this->board->shouldReceive('getRobotPlaced')
+        ->once()
+        ->andReturn(['x' => 0, 'y' => 2, 'facing' => 'WEST']);
+
+    $this->board->shouldReceive('placeRobot')
+        ->once()
+        ->with(-1, 2, 'WEST')
+        ->andReturn(false);
+
+    $mover = new Mover($this->board, 'MOVE');
+    $mover->execute();
+});
+
+it('throws exception when robot not placed', function () {
+    $board = new Board();
+    $mover = new Mover($board, 'MOVE');
+
+    expect(fn() => $mover->execute())
+        ->toThrow(BoardException::class, 'Robot is not placed on the board');
+});
+
+
+
+
+
+it('throws exception for invalid facing direction', function () {
+    $this->board->shouldReceive('getRobotPlaced')
+        ->once()
+        ->andReturn(['x' => 2, 'y' => 2, 'facing' => 'INVALID']);
+
+    $mover = new Mover($this->board, 'MOVE');
+    $mover->execute();
+})->throws(BoardException::class, 'Invalid facing direction', 1304);
+
+
+it('throws exception for missing x coordinate', function () {
+    $board = new Board();
+
+    // Simulate invalid placement
+    $board->setRobotPlacement([
+        // 'x' is missing
+        'y' => 1,
+        'facing' => 'NORTH',
+    ]);
+
+    $mover = new Mover($board, 'MOVE');
+
+    expect(fn() => $mover->execute())
+        ->toThrow(BoardException::class, 'Invalid placement data: missing x');
+});
+
+
+
+
+
+it('throws exception for missing y coordinate', function () {
+    $board = new Board();
+
+    // Simulate invalid placement
+    $board->setRobotPlacement([
+        // 'x' is missing
+        'x' => 2,
+        'facing' => 'NORTH',
+    ]);;
+
+    $mover = new Mover($board, 'MOVE');
+    
+    expect(fn() => $mover->execute())
+        ->toThrow(BoardException::class, 'Invalid placement data: missing y');
+});
+
+it('throws exception for missing facing coordinate', function () {
+    $board = new Board();
+
+    // Simulate invalid placement
+    $board->setRobotPlacement([
+        'y' => 2,
+        'x' => 2,
+         
+    ]);;
+
+    $mover = new Mover($board, 'MOVE');
+    
+    expect(fn() => $mover->execute())
+        ->toThrow(BoardException::class, 'Invalid placement data: missing facing');
 });

@@ -1,7 +1,8 @@
 <?php
-namespace App\Models;
+namespace App\Command;
 use App\Exceptions\ReporterException;
 use App\Command\Command;
+use App\Models\Board;
 class Reporter implements Command
 {
     private Board $board;
