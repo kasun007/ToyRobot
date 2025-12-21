@@ -3,12 +3,15 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use App\Models\Board;
-use App\CommandFactory;
+use App\Command\CommandFactory;
 use App\Exceptions\BoardException;
-
+use App\Models\ToyRobot;
+use App\Services\RotationService;
 
 $board = new Board();
-$factory = new CommandFactory($board);
+
+$toyRobot = new ToyRobot($board);
+$factory = new CommandFactory($board, $toyRobot);
 $commands = file(__DIR__ . '/../commands.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 foreach ($commands as $lineNumber => $commandText) {

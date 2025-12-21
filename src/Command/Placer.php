@@ -19,14 +19,7 @@ class Placer implements Command
 
     public function execute(): void
     {
-        if (!$this->board) {
-            throw new PlacerException(
-                'Board not initialized',
-                1201,
-                ['command' => $this->command]
-            );
-        }
-
+        
         $parts = explode(' ', $this->command, 2);
 
         if (count($parts) !== 2) {
@@ -64,6 +57,9 @@ class Placer implements Command
 
         $direction = Direction::validate($directionString, PlacerException::class, 1205);
 
+        
+
         $this->board->placeRobot($x, $y, $direction->value);
+       
     }
 }

@@ -18,14 +18,7 @@ class Reporter implements Command
     {
         $placement = $this->board->getRobotPlaced();
 
-        if ($placement === null) {
-            throw new ReporterException(
-                'Robot is not placed on the board',
-                1301,
-                ['command' => $this->command]
-            );
-            return "";
-        }
+        
 
        return "Output: {$placement['x']},{$placement['y']},{$placement['facing']}";
     }

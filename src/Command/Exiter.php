@@ -19,19 +19,6 @@ class Exiter implements Command
 
     public function execute(): void
     {
-        $placement = $this->board->getRobotPlaced();
-
-        if ($placement === null) {
-            throw new ExiterException(
-                'Robot is not placed on the board',
-                1302,
-                ['command' => $this->command]
-            );
-        }
-
-         
-
-        
 
         exit(0);
     }
